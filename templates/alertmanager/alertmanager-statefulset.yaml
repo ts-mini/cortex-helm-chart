@@ -156,9 +156,8 @@ spec:
             - "-alertmanager.configs.url=http://{{ template "cortex.fullname" . }}-configs.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:{{ .Values.config.server.http_listen_port }}"
             {{- end }}
             {{- if gt (.Values.alertmanager.replicas | int) 1 }}
-            {{- range $n := until (.Values.alertmanager.replicas |int ) }}
-            - -alertmanager.cluster.peers={{ template "cortex.fullname" $ }}-alertmanager-{{ $n }}.{{ template "cortex.fullname" $ }}-alertmanager-headless.{{ $.Release.Namespace }}.svc.{{ $.Values.clusterDomain }}:{{ $clusterPort }}
-            {{- end }}
+            - "-alertmanager.cluster.listen-address={{ .Values.config.alertmanager.cluster.listen_addres }}"
+            - "-alertmanager.cluster.peers={{ template "cortex.alertmanagerPeers" . }}"
             {{- end }}
             {{- range $key, $value := .Values.alertmanager.extraArgs }}
             - "-{{ $key }}={{ $value }}"
